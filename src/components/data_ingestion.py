@@ -6,6 +6,7 @@ import numpy as np
 
 from src.exception import CustomException
 from src.components.data_transformation import DataTransformation
+from src.components.model_trainer import ModelTrainer
 
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
@@ -52,7 +53,10 @@ if __name__=='__main__':
     train_data,test_data=obj.get_data()
 
     datatransformation=DataTransformation()
-    datatransformation.initiate_data_transformation(train_data,test_data)
+    train_arr,test_arr,_=datatransformation.initiate_data_transformation(train_data,test_data)
+
+    modeltraining=ModelTrainer()
+    print(modeltraining.initiate_model_transformer(train_arr,test_arr))
         
 
 
