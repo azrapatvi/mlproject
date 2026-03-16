@@ -111,11 +111,13 @@ class ModelTrainer:
                 }
             }
 
-            model_results = evaluate_model(X_train, y_train, X_test, y_test, models, params)
+            model_results,best_models = evaluate_model(X_train, y_train, X_test, y_test, models, params)
 
-            best_model_score = max(model_results['scores'].values())
-            best_model_name = max(model_results['scores'], key=model_results['scores'].get)
-            best_model = model_results['best_models'][best_model_name]  # <-- now it's tuned!
+            best_model_score = max(model_results.values())
+
+            best_model_name = max(model_results, key=model_results.get)
+
+            best_model = best_models[best_model_name]
 
             if best_model_score < 0.60:
                 raise CustomException("No best model found")

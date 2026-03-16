@@ -27,33 +27,29 @@ def evaluate_model(X_train, y_train, X_test, y_test, models, params, n_iter=20):
         for name, model in models.items():
             print(f"Training and tuning {name}...")
 
-            if name in params:
-                rs = RandomizedSearchCV(
-                    estimator=model,
-                    param_distributions=params[name],
-                    n_iter=n_iter,
-                    cv=5,
-                    n_jobs=-1,
-                    scoring='r2',
-                    random_state=42
-                )
-                rs.fit(X_train, y_train)
-                best_model = rs.best_estimator_
-                print(f"Best params for {name}: {rs.best_params_}")
+            rs=RandomizedSearchCV(estimator=model,param_distributions=params[name],n_iter=30,cv=4,verbose=2,n_jobs=-1)
 
-                # Already trained on training folds; refit on full training data to be sure
-                best_model.fit(X_train, y_train)
-            else:
-                best_model = model
-                best_model.fit(X_train, y_train)
+            rs.fit(X_train, y_train)
+
+            best_model = rs.best_estimator_
 
             y_test_pred = best_model.predict(X_test)
-            test_model_score = r2_score(y_test, y_test_pred)
 
-            report[name] = test_model_score
-            best_models[name] = best_model  # store tuned model
+            score = r2_score(y_test, y_test_pred)
 
-        return {"scores": report, "best_models": best_models}
+            report[name] = score
+
+            best_models[name] = best_model
+
+        return report, best_models
 
     except Exception as e:
         raise CustomException(e, sys)
+    
+def load_object(path):
+    try:
+        with open(path,'rb')as f:
+            return(pickle.load(f))
+        
+    except Exception as e:
+        raise CustomException(e,sys)
